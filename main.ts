@@ -185,8 +185,7 @@ export default class MyPlugin extends Plugin {
 			this.settings = await this.loadSettings()
 		}
 		catch(e) {
-			new Notice("Couldn't connect to Anki! Check console for error message.")
-			return
+			return new Notice("Couldn't connect to Anki! Check console for error message.")
 		}
 
 		this.note_types = Object.keys(this.settings["CUSTOM_REGEXPS"])
