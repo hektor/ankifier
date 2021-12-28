@@ -33,16 +33,18 @@ const toInlineHTMLComment = (s: string): string => `<!--${s}-->`
 const generateIDString = (id: number, comment = false): string =>
   comment ? toInlineHTMLComment(`ID: ${id}`) : `ID: ${id}`
 
-function string_insert(text: string, position_inserts: Array<[number, string]>): string {
-  /*Insert strings in position_inserts into text, at indices.
+/*
+ *
+ */
 
+const insertIntoString = (text: string, position_inserts: Array<[number, string]>): string => {
+  /*Insert strings in position_inserts into text, at indices.
     position_inserts will look like:
     [(0, "hi"), (3, "hello"), (5, "beep")]*/
+
   let offset = 0
-  const sorted_inserts: Array<[number, string]> = position_inserts.sort(
-    (a, b): number => a[0] - b[0]
-  )
-  for (const insertion of sorted_inserts) {
+  const sorted: Array<[number, string]> = position_inserts.sort((a, b): number => a[0] - b[0])
+  for (const insertion of sorted) {
     const position = insertion[0]
     const insert_str = insertion[1]
     text = text.slice(0, position + offset) + insert_str + text.slice(position + offset)
@@ -506,6 +508,10 @@ export class AllFile extends AbstractFile {
       }
     })
     // Insert IDs into file
-    this.file = string_insert(this.file, [...normal_inserts, ...inline_inserts, ...regex_inserts])
+    this.file = insertIntoString(this.file, [
+      ...normal_inserts,
+      ...inline_inserts,
+      ...regex_inserts,
+    ])
   }
 }
