@@ -482,10 +482,6 @@ export class AllFile extends AbstractFile {
     this.scanDeletions()
   }
 
-  fix_newline_ids() {
-    this.file = this.file.replace(double_regexp, '$1')
-  }
-
   writeIDs() {
     const normal_inserts: [number, string][] = []
     this.id_indexes.forEach((id_position: number, index: number) => {
@@ -513,6 +509,5 @@ export class AllFile extends AbstractFile {
       this.file,
       normal_inserts.concat(inline_inserts).concat(regex_inserts)
     )
-    this.fix_newline_ids()
   }
 }
