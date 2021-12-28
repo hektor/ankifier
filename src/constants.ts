@@ -5,8 +5,6 @@ export const OBS_DISPLAY_CODE_REGEXP = /```[\s\S]*?```/g
 
 export const CODE_CSS_URL = `https://cdn.jsdelivr.net/npm/highlightjs-themes@1.0.0/arta.css`
 
-export function escapeRegex(str: string): string {
-  // Got from stackoverflow - https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
-  // eslint-disable-next-line no-useless-escape
-  return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-}
+// https://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript
+// eslint-disable-next-line no-useless-escape
+export const escapeRegex = (s: string): string => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
