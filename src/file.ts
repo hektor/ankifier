@@ -503,9 +503,7 @@ export class AllFile extends AbstractFile {
         regex_inserts.push([id_position, '\n' + generateIDString(identifier, this.data.comment)])
       }
     })
-    this.file = string_insert(
-      this.file,
-      normal_inserts.concat(inline_inserts).concat(regex_inserts)
-    )
+    // Insert IDs into file
+    this.file = string_insert(this.file, [...normal_inserts, ...inline_inserts, ...regex_inserts])
   }
 }
