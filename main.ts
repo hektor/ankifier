@@ -209,10 +209,6 @@ export default class MyPlugin extends Plugin {
 
 		this.addSettingTab(new SettingsTab(this.app, this));
 
-		this.addRibbonIcon('anki', 'Obsidian_to_Anki - Scan Vault', async () => {
-			await this.scanVault()
-		})
-
 		this.addCommand({
 			id: 'anki-scan-vault',
 			name: 'Scan Vault',
