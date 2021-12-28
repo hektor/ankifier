@@ -485,33 +485,39 @@ export class AllFile extends AbstractFile {
   }
 
   writeIDs() {
-    const normal_inserts: [number, string][] = []
-    this.id_indexes.forEach((id_position: number, index: number) => {
-      const identifier: number | null = this.note_ids[index]
-      if (identifier) {
-        normal_inserts.push([id_position, generateIDString(identifier, this.data.comment) + '\n'])
-      }
+    type fileID = [number, string][]
+    type ID = number | null
+
+    const {
+      id_indexes,
+      inline_id_indexes,
+      regex_id_indexes,
+      note_ids,
+      data,
+      notes_to_add,
+      inline_notes_to_add,
+    } = this
+
+    const normalIDs: fileID = []
+    const inlineIDs: fileID = []
+    const regexIDs: fileID = []
+
+    id_indexes.forEach((pos: number, i: number) => {
+      const id: ID = note_ids[i]
+      if (id) normalIDs.push([pos, generateIDString(id, data.comment) + '\n'])
     })
-    const inline_inserts: [number, string][] = []
-    this.inline_id_indexes.forEach((id_position: number, index: number) => {
-      const identifier: number | null = this.note_ids[index + this.notes_to_add.length] //Since regular then inline
-      if (identifier) {
-        inline_inserts.push([id_position, generateIDString(identifier, this.data.comment)])
-      }
+
+    inline_id_indexes.forEach((pos: number, i: number) => {
+      const id: ID = note_ids[i + notes_to_add.length] // Since regular then inline
+      if (id) inlineIDs.push([pos, generateIDString(id, data.comment)])
     })
-    const regex_inserts: [number, string][] = []
-    this.regex_id_indexes.forEach((id_position: number, index: number) => {
-      const identifier: number | null =
-        this.note_ids[index + this.notes_to_add.length + this.inline_notes_to_add.length] // Since regular then inline then regex
-      if (identifier) {
-        regex_inserts.push([id_position, '\n' + generateIDString(identifier, this.data.comment)])
-      }
+
+    regex_id_indexes.forEach((pos: number, i: number) => {
+      const id: ID = note_ids[i + notes_to_add.length + inline_notes_to_add.length] // Since regular then inline then regex
+      if (id) regexIDs.push([pos, '\n' + generateIDString(id, data.comment)])
     })
+
     // Insert IDs into file
-    this.file = insertIntoString(this.file, [
-      ...normal_inserts,
-      ...inline_inserts,
-      ...regex_inserts,
-    ])
+    this.file = insertIntoString(this.file, [...normalIDs, ...inlineIDs, ...regexIDs])
   }
 }
