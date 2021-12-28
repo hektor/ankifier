@@ -216,8 +216,6 @@ export default class MyPlugin extends Plugin {
   }
 
   async onunload() {
-    console.log('Saving settings for Obsidian_to_Anki...')
     this.saveAllData()
-    console.log('unloading Obsidian_to_Anki...')
   }
 }
