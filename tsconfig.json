@@ -1,9 +1,9 @@
 {
-    "compilerOptions": {
-        "lib": ["esnext", "dom"],
-        "downlevelIteration": true,
-        "target": "esnext",
-        "moduleResolution": "node",
-        "allowSyntheticDefaultImports": true,
-    }
+  "compilerOptions": {
+    "lib": ["esnext", "dom"],
+    "downlevelIteration": true,
+    "target": "esnext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true
+  }
 }
