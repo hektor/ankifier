@@ -1,8 +1,7 @@
-import { Notice, Plugin, addIcon } from 'obsidian'
+import { Notice, Plugin } from 'obsidian'
 import * as AnkiConnect from './src/anki'
 import { PluginSettings, ParsedSettings } from './src/interfaces/settings-interface'
 import { SettingsTab } from './src/settings'
-import { ANKI_ICON } from './src/constants'
 import { settingToData } from './src/setting-to-data'
 import { FileManager } from './src/files-manager'
 
@@ -180,8 +179,7 @@ export default class MyPlugin extends Plugin {
 	}
 
 	async onload() {
-		console.log('loading Obsidian_to_Anki...');
-		addIcon('anki', ANKI_ICON)
+		console.log('Obsidian_to_Anki...');
 
 		try {
 			this.settings = await this.loadSettings()
