@@ -474,9 +474,11 @@ export class AllFile extends AbstractFile {
         this.search(note_type, regexp_str)
       }
     }
-    this.all_notes_to_add = this.notes_to_add
-      .concat(this.inline_notes_to_add)
-      .concat(this.regex_notes_to_add)
+    this.all_notes_to_add = [
+      ...this.notes_to_add,
+      ...this.inline_notes_to_add,
+      ...this.regex_notes_to_add,
+    ]
     this.scanDeletions()
   }
 
