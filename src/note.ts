@@ -7,19 +7,18 @@ import { FormatConverter } from './format'
 import { AnkiConnectNote, AnkiConnectNoteAndID } from './interfaces/note-interface'
 import { FIELDS_DICT, FROZEN_FIELDS_DICT } from './interfaces/field-interface'
 import { FileData } from './interfaces/settings-interface'
-import { OBS_TAG_REGEXP } from './constants'
+import { OBS_TAG_REGEXP, ANKI_CLOZE_REGEXP } from './constants'
 
 const TAG_PREFIX = 'Tags: '
 export const TAG_SEP = ' '
 export const ID_REGEXP_STR: string = String.raw`\n?(?:<!--)?(?:ID: (\d+).*)`
 export const TAG_REGEXP_STR: string = String.raw`(Tags: .*)`
 
-const ANKI_CLOZE_REGEXP = /{{c\d+::[\s\S]+?}}/
 export const CLOZE_ERROR = 42
 export const NOTE_TYPE_ERROR = 69
 
+// Check whether text actually contains cloze deletions
 function has_clozes(text: string): boolean {
-  /*Checks whether text actually has cloze deletions.*/
   return ANKI_CLOZE_REGEXP.test(text)
 }
 

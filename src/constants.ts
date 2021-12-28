@@ -9,6 +9,12 @@ export const OBS_DISPLAY_CODE_REGEXP = /```[\s\S]*?```/g
 export const OBS_TAG_REGEXP = /#(\w+)/g
 
 /*
+ * Anki regular expressions
+ */
+
+export const ANKI_CLOZE_REGEXP = /{{c\d+::[\s\S]+?}}/
+
+/*
  * URLs
  */
 
