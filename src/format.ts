@@ -2,7 +2,14 @@ import { AnkiConnectNote } from './interfaces/note-interface'
 import { basename, extname } from 'path'
 import { Converter } from 'showdown'
 import { CachedMetadata } from 'obsidian'
-import * as c from './constants'
+import {
+  OBS_DISPLAY_MATH_REGEXP,
+  OBS_INLINE_MATH_REGEXP,
+  OBS_DISPLAY_CODE_REGEXP,
+  OBS_CODE_REGEXP,
+  CODE_CSS_URL,
+  escapeRegex,
+} from './constants'
 
 import showdownHighlight from 'showdown-highlight'
 
@@ -77,8 +84,8 @@ export class FormatConverter {
 
   obsidian_to_anki_math(note_text: string): string {
     return note_text
-      .replace(c.OBS_DISPLAY_MATH_REGEXP, '\\[$1\\]')
-      .replace(c.OBS_INLINE_MATH_REGEXP, '\\($1\\)')
+      .replace(OBS_DISPLAY_MATH_REGEXP, '\\[$1\\]')
+      .replace(OBS_INLINE_MATH_REGEXP, '\\($1\\)')
   }
 
   cloze_repl(_1: string, match_id: string, match_content: string): string {
@@ -107,12 +114,12 @@ export class FormatConverter {
         this.detectedMedia.add(embed.link)
         if (AUDIO_EXTS.includes(extname(embed.link))) {
           note_text = note_text.replace(
-            new RegExp(c.escapeRegex(embed.original), 'g'),
+            new RegExp(escapeRegex(embed.original), 'g'),
             '[sound:' + basename(embed.link) + ']'
           )
         } else if (IMAGE_EXTS.includes(extname(embed.link))) {
           note_text = note_text.replace(
-            new RegExp(c.escapeRegex(embed.original), 'g'),
+            new RegExp(escapeRegex(embed.original), 'g'),
             '<img src="' + basename(embed.link) + '" alt="' + embed.displayText + '">'
           )
         } else {
@@ -129,7 +136,7 @@ export class FormatConverter {
     }
     for (const link of this.file_cache.links) {
       note_text = note_text.replace(
-        new RegExp(c.escapeRegex(link.original), 'g'),
+        new RegExp(escapeRegex(link.original), 'g'),
         '<a href="' + this.getUrlFromLink(link.link) + '">' + link.displayText + '</a>'
       )
     }
@@ -158,18 +165,14 @@ export class FormatConverter {
     let math_matches: string[]
     let inline_code_matches: string[]
     let display_code_matches: string[]
-    const add_highlight_css: boolean = note_text.match(c.OBS_DISPLAY_CODE_REGEXP) ? true : false
+    const add_highlight_css: boolean = note_text.match(OBS_DISPLAY_CODE_REGEXP) ? true : false
     ;[note_text, math_matches] = this.censor(note_text, ANKI_MATH_REGEXP, MATH_REPLACE)
     ;[note_text, display_code_matches] = this.censor(
       note_text,
-      c.OBS_DISPLAY_CODE_REGEXP,
+      OBS_DISPLAY_CODE_REGEXP,
       DISPLAY_CODE_REPLACE
     )
-    ;[note_text, inline_code_matches] = this.censor(
-      note_text,
-      c.OBS_CODE_REGEXP,
-      INLINE_CODE_REPLACE
-    )
+    ;[note_text, inline_code_matches] = this.censor(note_text, OBS_CODE_REGEXP, INLINE_CODE_REPLACE)
     if (cloze) {
       if (highlights_to_cloze) {
         note_text = note_text.replace(HIGHLIGHT_REGEXP, '{$1}')
@@ -189,7 +192,7 @@ export class FormatConverter {
       note_text = note_text.slice(PARA_OPEN.length, -1 * PARA_CLOSE.length)
     }
     if (add_highlight_css) {
-      note_text = '<link href="' + c.CODE_CSS_URL + '" rel="stylesheet">' + note_text
+      note_text = '<link href="' + CODE_CSS_URL + '" rel="stylesheet">' + note_text
     }
     return note_text
   }
