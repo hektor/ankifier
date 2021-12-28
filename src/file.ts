@@ -19,8 +19,6 @@ import * as c from './constants'
 import { FormatConverter } from './format'
 import { CachedMetadata, HeadingCache } from 'obsidian'
 
-const double_regexp = /(?:\r\n|\r|\n)((?:\r\n|\r|\n)(?:<!--)?ID: \d+)/g
-
 /*
  * Wrap a given string in an inline HTML comment
  */
