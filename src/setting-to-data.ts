@@ -11,6 +11,8 @@ export async function settingToData(
 ): Promise<ParsedSettings> {
   const result: ParsedSettings = <ParsedSettings>{}
 
+  const { Syntax, Defaults } = settings
+
   //Some processing required
   result.vault_name = app.vault.getName()
   result.fields_dict = fields_dict
@@ -20,14 +22,14 @@ export async function settingToData(
   result.folder_decks = settings.FOLDER_DECKS
   result.folder_tags = settings.FOLDER_TAGS
   result.template = {
-    deckName: settings.Defaults.Deck,
+    deckName: Defaults.Deck,
     modelName: '',
     fields: {},
     options: {
       allowDuplicate: false,
       duplicateScope: 'deck',
     },
-    tags: [settings.Defaults.Tag],
+    tags: [Defaults.Tag],
   }
   result.EXISTING_IDS = (await AnkiConnect.invoke('findNotes', {
     query: '',
@@ -35,42 +37,39 @@ export async function settingToData(
 
   //RegExp section
   result.FROZEN_REGEXP = new RegExp(
-    escapeRegex(settings.Syntax['Frozen Fields Line']) + String.raw` - (.*?):\n((?:[^\n][\n]?)+)`,
+    escapeRegex(Syntax['Frozen Fields Line']) + String.raw` - (.*?):\n((?:[^\n][\n]?)+)`,
     'g'
   )
   result.DECK_REGEXP = new RegExp(
-    String.raw`^` + escapeRegex(settings.Syntax['Target Deck Line']) + String.raw`(?:\n|: )(.*)`,
+    String.raw`^` + escapeRegex(Syntax['Target Deck Line']) + String.raw`(?:\n|: )(.*)`,
     'm'
   )
   result.TAG_REGEXP = new RegExp(
-    String.raw`^` + escapeRegex(settings.Syntax['File Tags Line']) + String.raw`(?:\n|: )(.*)`,
+    String.raw`^` + escapeRegex(Syntax['File Tags Line']) + String.raw`(?:\n|: )(.*)`,
     'm'
   )
   result.NOTE_REGEXP = new RegExp(
     String.raw`^` +
-      escapeRegex(settings.Syntax['Begin Note']) +
+      escapeRegex(Syntax['Begin Note']) +
       String.raw`\n([\s\S]*?\n)` +
-      escapeRegex(settings.Syntax['End Note']),
+      escapeRegex(Syntax['End Note']),
     'gm'
   )
   result.INLINE_REGEXP = new RegExp(
-    escapeRegex(settings.Syntax['Begin Inline Note']) +
+    escapeRegex(Syntax['Begin Inline Note']) +
       String.raw`(.*?)` +
-      escapeRegex(settings.Syntax['End Inline Note']),
+      escapeRegex(Syntax['End Inline Note']),
     'g'
   )
-  result.EMPTY_REGEXP = new RegExp(
-    escapeRegex(settings.Syntax['Delete Note Line']) + ID_REGEXP_STR,
-    'g'
-  )
+  result.EMPTY_REGEXP = new RegExp(escapeRegex(Syntax['Delete Note Line']) + ID_REGEXP_STR, 'g')
 
   //Just a simple transfer
-  result.curly_cloze = settings.Defaults.CurlyCloze
-  result.highlights_to_cloze = settings.Defaults['CurlyCloze - Highlights to Clozes']
-  result.add_file_link = settings.Defaults['Add File Link']
-  result.comment = settings.Defaults['ID Comments']
-  result.add_context = settings.Defaults['Add Context']
-  result.add_obs_tags = settings.Defaults['Add Obsidian Tags']
+  result.curly_cloze = Defaults.CurlyCloze
+  result.highlights_to_cloze = Defaults['CurlyCloze - Highlights to Clozes']
+  result.add_file_link = Defaults['Add File Link']
+  result.comment = Defaults['ID Comments']
+  result.add_context = Defaults['Add Context']
+  result.add_obs_tags = Defaults['Add Obsidian Tags']
 
   return result
 }
