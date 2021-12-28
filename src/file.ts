@@ -491,15 +491,14 @@ export class AllFile extends AbstractFile {
     this.id_indexes.forEach((id_position: number, index: number) => {
       const identifier: number | null = this.note_ids[index]
       if (identifier) {
-        normal_inserts.push([id_position, id_to_str(identifier, false, this.data.comment)])
+        normal_inserts.push([id_position, generateIDString(identifier, this.data.comment) + '\n'])
       }
     })
     const inline_inserts: [number, string][] = []
     this.inline_id_indexes.forEach((id_position: number, index: number) => {
       const identifier: number | null = this.note_ids[index + this.notes_to_add.length] //Since regular then inline
       if (identifier) {
-        inline_inserts.push([id_position, id_to_str(identifier, true, this.data.comment)])
-        normal_inserts.push([id_position, generateIDString(identifier, this.data.comment)])
+        inline_inserts.push([id_position, generateIDString(identifier, this.data.comment)])
       }
     })
     const regex_inserts: [number, string][] = []
