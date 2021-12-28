@@ -7,12 +7,12 @@ import { FormatConverter } from './format'
 import { AnkiConnectNote, AnkiConnectNoteAndID } from './interfaces/note-interface'
 import { FIELDS_DICT, FROZEN_FIELDS_DICT } from './interfaces/field-interface'
 import { FileData } from './interfaces/settings-interface'
+import { OBS_TAG_REGEXP } from './constants'
 
 const TAG_PREFIX = 'Tags: '
 export const TAG_SEP = ' '
 export const ID_REGEXP_STR: string = String.raw`\n?(?:<!--)?(?:ID: (\d+).*)`
 export const TAG_REGEXP_STR: string = String.raw`(Tags: .*)`
-const OBS_TAG_REGEXP = /#(\w+)/g
 
 const ANKI_CLOZE_REGEXP = /{{c\d+::[\s\S]+?}}/
 export const CLOZE_ERROR = 42
