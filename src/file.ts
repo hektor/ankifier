@@ -21,18 +21,19 @@ import { CachedMetadata, HeadingCache } from 'obsidian'
 
 const double_regexp = /(?:\r\n|\r|\n)((?:\r\n|\r|\n)(?:<!--)?ID: \d+)/g
 
-function id_to_str(identifier: number, inline = false, comment = false): string {
-  let result = 'ID: ' + identifier.toString()
-  if (comment) {
-    result = '<!--' + result + '-->'
-  }
-  if (inline) {
-    result += ' '
-  } else {
-    result += '\n'
-  }
-  return result
-}
+/*
+ * Wrap a given string in an inline HTML comment
+ */
+
+const toInlineHTMLComment = (s: string): string => `<!--${s}-->`
+
+/*
+ * Return ID string for a given the note ID.  Wrapped in a
+ * comment based on the user's settings
+ */
+
+const generateIDString = (id: number, comment = false): string =>
+  comment ? toInlineHTMLComment(`ID: ${id}`) : `ID: ${id}`
 
 function string_insert(text: string, position_inserts: Array<[number, string]>): string {
   /*Insert strings in position_inserts into text, at indices.
@@ -498,6 +499,7 @@ export class AllFile extends AbstractFile {
       const identifier: number | null = this.note_ids[index + this.notes_to_add.length] //Since regular then inline
       if (identifier) {
         inline_inserts.push([id_position, id_to_str(identifier, true, this.data.comment)])
+        normal_inserts.push([id_position, generateIDString(identifier, this.data.comment)])
       }
     })
     const regex_inserts: [number, string][] = []
@@ -505,7 +507,7 @@ export class AllFile extends AbstractFile {
       const identifier: number | null =
         this.note_ids[index + this.notes_to_add.length + this.inline_notes_to_add.length] // Since regular then inline then regex
       if (identifier) {
-        regex_inserts.push([id_position, '\n' + id_to_str(identifier, false, this.data.comment)])
+        regex_inserts.push([id_position, '\n' + generateIDString(identifier, this.data.comment)])
       }
     })
     this.file = string_insert(
