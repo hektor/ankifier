@@ -318,6 +318,7 @@ export class AllFile extends AbstractFile {
         note_match[1],
         note_match.index + note_match[0].indexOf(note_match[1]) + note_match[1].length,
       ]
+
       // That second thing essentially gets the index of the end of the first capture group.
       const parsed = new Note(
         note,
@@ -408,9 +409,8 @@ export class AllFile extends AbstractFile {
   }
 
   search(note_type: string, regexp_str: string) {
-    //Search the file for regex matches
-    //ignoring matches inside ignore_spans,
-    //and adding any matches to ignore_spans.
+    //  Search file for regex matches ignoring matches in ignore_spans,
+    //  and adding any matches to ignore_spans.
     for (const search_id of [true, false]) {
       for (const search_tags of [true, false]) {
         const id_str = search_id ? ID_REGEXP_STR : ''

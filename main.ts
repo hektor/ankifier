@@ -41,8 +41,10 @@ export default class MyPlugin extends Plugin {
         'Add Obsidian Tags': false,
       },
     }
-    /*Making settings from scratch, so need note types*/
+
+    // Get note types (e.g. "Basic"; Cloze"; ...)
     this.note_types = (await AnkiConnect.invoke('modelNames')) as Array<string>
+    // ?
     this.fields_dict = await this.generateFieldsDict()
     for (const note_type of this.note_types) {
       settings['CUSTOM_REGEXPS'][note_type] = ''
@@ -150,18 +152,15 @@ export default class MyPlugin extends Plugin {
   }
 
   async scanVault() {
-    new Notice('Scanning vault, check console for details...')
-    console.info('Checking connection to Anki...')
+    new Notice('Obsidian: scanning vault.')
     try {
       await AnkiConnect.invoke('modelNames')
     } catch (e) {
-      new Notice("Error, couldn't connect to Anki! Check console for error message.")
-      return
+      return new Notice('Obsidian: could not connect to Anki.')
     }
-    new Notice(
-      "Successfully connected to Anki! This could take a few minutes - please don't close Anki until the plugin is finished"
-    )
+    new Notice('Obsidian: connected, do not close Anki until finished.')
     const data: ParsedSettings = await settingToData(this.app, this.settings, this.fields_dict)
+    console.log(data)
     const manager = new FileManager(
       this.app,
       data,
@@ -181,15 +180,18 @@ export default class MyPlugin extends Plugin {
   }
 
   async onload() {
-    console.log('Obsidian_to_Anki...')
-
     try {
       this.settings = await this.loadSettings()
     } catch (e) {
       return new Notice("Couldn't connect to Anki! Check console for error message.")
     }
 
+    // ["Basic, "Cloze", ...]
     this.note_types = Object.keys(this.settings['CUSTOM_REGEXPS'])
+    // {
+    //   "Basic": ["Front", "Back"],
+    //   ...
+    // }
     this.fields_dict = await this.loadFieldsDict()
     if (Object.keys(this.fields_dict).length == 0) {
       new Notice('Need to connect to Anki to generate fields dictionary...')

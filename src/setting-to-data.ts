@@ -31,6 +31,8 @@ export async function settingToData(
     },
     tags: [Defaults.Tag],
   }
+
+  // Get all note IDs from Anki
   result.EXISTING_IDS = (await AnkiConnect.invoke('findNotes', {
     query: '',
   })) as number[]

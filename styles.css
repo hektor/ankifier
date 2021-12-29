@@ -1,4 +1,9 @@
-.anki-settings-table td, .anki-settings-table th {
+/*
+ * CSS for plugin options within Obsidian
+ */
+
+.anki-settings-table td,
+.anki-settings-table th {
   border: 1px solid var(--background-modifier-border);
   padding: 4px 10px;
 }
@@ -8,12 +13,6 @@
   display: none;
 }
 
-.anki-center {
-  margin: auto;
-  padding: 5px;
-  padding-top: 30px;
-}
-
 .anki-rotated {
-    transform: rotate(-90deg);
+  transform: rotate(-90deg);
 }
