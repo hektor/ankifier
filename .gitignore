@@ -126,8 +126,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Plugin data
+# Plugin files
 data.json
-
-# Other
 *.old
+
+# Built file has to be in root
+main.js
