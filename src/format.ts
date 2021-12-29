@@ -2,13 +2,8 @@ import { AnkiConnectNote } from './interfaces/note-interface'
 import { basename, extname } from 'path'
 import { Converter } from 'showdown'
 import { CachedMetadata } from 'obsidian'
-import {
-  OBS_DISPLAY_MATH_REGEXP,
-  OBS_INLINE_MATH_REGEXP,
-  OBS_DISPLAY_CODE_REGEXP,
-  OBS_CODE_REGEXP,
-  CODE_CSS_URL,
-} from './constants'
+import { OBS_DISPLAY_CODE_REGEXP, OBS_CODE_REGEXP, CODE_CSS_URL } from './constants'
+import { latexToDollarMath } from './lib/markdown'
 import { escapeRegex } from './lib/regex'
 import { escapeHtml, PARA_OPEN, PARA_CLOSE } from './lib/html'
 
@@ -37,9 +32,6 @@ const converter: Converter = new Converter({
   requireSpaceBeforeHeadingText: true,
   extensions: [showdownHighlight],
 })
-
-const obsidianToAnkiMath = (s: string): string =>
-  s.replace(OBS_DISPLAY_MATH_REGEXP, '\\[$1\\]').replace(OBS_INLINE_MATH_REGEXP, '\\($1\\)')
 
 export class FormatConverter {
   file_cache: CachedMetadata
@@ -146,7 +138,7 @@ export class FormatConverter {
   }
 
   format(note_text: string, cloze: boolean, highlights_to_cloze: boolean): string {
-    note_text = obsidianToAnkiMath(note_text)
+    note_text = latexToDollarMath(note_text)
     //Extract the parts that are anki math
     let math_matches: string[]
     let inline_code_matches: string[]
