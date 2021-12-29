@@ -2,8 +2,8 @@
  * Obsidian regular expressions
  */
 
-export const OBS_INLINE_MATH_REGEXP = /(?<!\$)\$((?=[\S])(?=[^$])[\s\S]*?\S)\$/g
-export const OBS_DISPLAY_MATH_REGEXP = /\$\$([\s\S]*?)\$\$/g
+export const INLINE_DOLLAR_MATH_REGEXP = /(?<!\$)\$((?=[\S])(?=[^$])[\s\S]*?\S)\$/g
+export const DISPLAY_DOLLAR_MATH_REGEXP = /\$\$([\s\S]*?)\$\$/g
 export const OBS_CODE_REGEXP = /(?<!`)`(?=[^`])[\s\S]*?`/g
 export const OBS_DISPLAY_CODE_REGEXP = /```[\s\S]*?```/g
 export const OBS_TAG_REGEXP = /#(\w+)/g
