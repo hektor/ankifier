@@ -121,6 +121,12 @@ abstract class AbstractNote {
     }
     template['tags'].push(...this.tags)
     template['deckName'] = deck
+
+    if (template.modelName === 'Cloze' && !containsCloze(template)) {
+      // Error code prevents addition
+      this.identifier = CLOZE_ERROR
+      console.warn(`Non-clozed "Cloze" note in "${template.deckName}" deck`, template.fields)
+    }
     return { note: template, identifier: this.identifier }
   }
 }
