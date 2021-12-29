@@ -1,5 +1,3 @@
-/*Performing plugin operations on markdown file contents*/
-
 import { FROZEN_FIELDS_DICT } from './interfaces/field-interface'
 import { AnkiConnectNote, AnkiConnectNoteAndID } from './interfaces/note-interface'
 import { FileData } from './interfaces/settings-interface'
@@ -15,11 +13,15 @@ import {
 } from './note'
 import { Md5 } from 'ts-md5/dist/md5'
 import * as AnkiConnect from './anki'
-import { ConnectRequest as AnkiConnectRequest } from './anki'
+import { Request as AnkiConnectRequest } from './anki'
 import * as c from './constants'
 import { FormatConverter } from './format'
 import { toInlineHTMLComment } from './lib/html'
 import { CachedMetadata, HeadingCache } from 'obsidian'
+
+/*
+ * Performing plugin operations on markdown file contents
+ */
 
 /*
  * Return ID string for a given the note ID.  Wrapped in a

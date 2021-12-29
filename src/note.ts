@@ -78,13 +78,9 @@ abstract class AbstractNote {
   }
 
   abstract getSplitText(): string[]
-
   abstract getIdentifier(): number | null
-
   abstract getTags(): string[]
-
   abstract getNoteType(): string
-
   abstract getFields(): Record<string, string>
 
   parse(
@@ -94,19 +90,23 @@ abstract class AbstractNote {
     data: FileData,
     context: string
   ): AnkiConnectNoteAndID {
+    // TODO: Fix this kind of deep cloning
     const template = JSON.parse(JSON.stringify(data.template))
-    template['modelName'] = this.note_type
-    if (this.no_note_type) {
-      return { note: template, identifier: NOTE_TYPE_ERROR }
-    }
-    template['fields'] = this.getFields()
+    console.log('1', template)
+    console.log('2', {
+      modelName: this.note_type,
+      fields: this.getFields(),
+      tags: [...data.template.tags, ...this.tags],
+      deckName: deck,
+      options: data.template.options,
+    })
+    template.modelName = this.note_type
+    if (this.no_note_type) return { note: template, identifier: NOTE_TYPE_ERROR }
+    template.fields = this.getFields()
     const file_link_fields = data.file_link_fields
-    if (url) {
-      this.formatter.format_note_with_url(template, url, file_link_fields[this.note_type])
-    }
-    if (Object.keys(frozen_fields_dict).length) {
+    if (url) this.formatter.format_note_with_url(template, url, file_link_fields[this.note_type])
+    if (Object.keys(frozen_fields_dict).length)
       this.formatter.format_note_with_frozen_fields(template, frozen_fields_dict)
-    }
     if (context) {
       const context_field = data.context_fields[this.note_type]
       template['fields'][context_field] += context
