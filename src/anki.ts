@@ -1,6 +1,6 @@
-import { AnkiConnectNote } from './interfaces/note-interface'
+import { AnkiConnectNote as Note } from './interfaces/note-interface'
 
-export interface AnkiConnectRequest {
+export interface Request {
   action: string
   version: 6
   params: object
@@ -53,7 +53,7 @@ export function parse<T>(response: { error: string; result: T }): T {
  * Returns a request object
  */
 
-const request = (action: string, params = {}): AnkiConnectRequest => ({
+const request = (action: string, params = {}): Request => ({
   action,
   version: 6,
   params,
@@ -63,32 +63,26 @@ const request = (action: string, params = {}): AnkiConnectRequest => ({
  * Request functions returning various request objects
  */
 
-export const multi = (actions: AnkiConnectRequest[]): AnkiConnectRequest =>
-  request('multi', { actions })
+type Multi = (actions: Request[]) => Request
+type Note = (note: Note) => Request
+type Notes = (notes: number[]) => Request
+type Fields = (id: number, fields: Record<string, string>) => Request
+type ChangeDeck = (cards: number[], deck: string) => Request
+type Tags = (notes: number[], tags: string) => Request
+type File = (filename: string, data: string) => Request
+type FilePath = (filename: string, path: string) => Request
 
-export const addNote = (note: AnkiConnectNote): AnkiConnectRequest => request('addNote', { note })
-
-export const deleteNotes = (notes: number[]): AnkiConnectRequest =>
-  request('deleteNotes', { notes })
-
-export const updateNoteFields = (id: number, fields: Record<string, string>): AnkiConnectRequest =>
+export const multi: Multi = (actions) => request('multi', { actions })
+export const addNote: Note = (note) => request('addNote', { note })
+export const deleteNotes: Notes = (notes) => request('deleteNotes', { notes })
+export const updateNoteFields: Fields = (id, fields) =>
   request('updateNoteFields', { note: { id, fields } })
-
-export const notesInfo = (notes: number[]): AnkiConnectRequest => request('notesInfo', { notes })
-
-export const changeDeck = (cards: number[], deck: string): AnkiConnectRequest =>
-  request('changeDeck', { cards, deck })
-
-export const removeTags = (notes: number[], tags: string): AnkiConnectRequest =>
-  request('removeTags', { notes, tags })
-
-export const addTags = (notes: number[], tags: string): AnkiConnectRequest =>
-  request('addTags', { notes, tags })
-
-export const getTags = (): AnkiConnectRequest => request('getTags')
-
-export const storeMediaFile = (filename: string, data: string): AnkiConnectRequest =>
+export const notesInfo: Notes = (notes) => request('notesInfo', { notes })
+export const changeDeck: ChangeDeck = (cards, deck) => request('changeDeck', { cards, deck })
+export const removeTags: Tags = (notes, tags) => request('removeTags', { notes, tags })
+export const addTags: Tags = (notes, tags) => request('addTags', { notes, tags })
+export const getTags = (): Request => request('getTags')
+export const storeMediaFile: File = (filename, data) =>
   request('storeMediaFile', { filename, data })
-
-export const storeMediaFileByPath = (filename: string, path: string): AnkiConnectRequest =>
+export const storeMediaFileByPath: FilePath = (filename, path) =>
   request('storeMediaFile', { filename, path })
