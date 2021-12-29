@@ -15,6 +15,7 @@ import {
 } from './note'
 import { Md5 } from 'ts-md5/dist/md5'
 import * as AnkiConnect from './anki'
+import { ConnectRequest as AnkiConnectRequest } from './anki'
 import * as c from './constants'
 import { FormatConverter } from './format'
 import { toInlineHTMLComment } from './lib/html'
@@ -200,27 +201,27 @@ abstract class AbstractFile {
     this.file = this.file.replace(this.data.EMPTY_REGEXP, '')
   }
 
-  getAddNotes(): AnkiConnect.AnkiConnectRequest {
-    const actions: AnkiConnect.AnkiConnectRequest[] = []
+  getAddNotes(): AnkiConnectRequest {
+    const actions: AnkiConnectRequest[] = []
     for (const note of this.all_notes_to_add) {
       actions.push(AnkiConnect.addNote(note))
     }
     return AnkiConnect.multi(actions)
   }
 
-  getDeleteNotes(): AnkiConnect.AnkiConnectRequest {
+  getDeleteNotes(): AnkiConnectRequest {
     return AnkiConnect.deleteNotes(this.notes_to_delete)
   }
 
-  getUpdateFields(): AnkiConnect.AnkiConnectRequest {
-    const actions: AnkiConnect.AnkiConnectRequest[] = []
+  getUpdateFields(): AnkiConnectRequest {
+    const actions: AnkiConnectRequest[] = []
     for (const parsed of this.notes_to_edit) {
       actions.push(AnkiConnect.updateNoteFields(parsed.identifier, parsed.note.fields))
     }
     return AnkiConnect.multi(actions)
   }
 
-  getNoteInfo(): AnkiConnect.AnkiConnectRequest {
+  getNoteInfo(): AnkiConnectRequest {
     const IDs: number[] = []
     for (const parsed of this.notes_to_edit) {
       IDs.push(parsed.identifier)
@@ -228,11 +229,11 @@ abstract class AbstractFile {
     return AnkiConnect.notesInfo(IDs)
   }
 
-  getChangeDecks(): AnkiConnect.AnkiConnectRequest {
+  getChangeDecks(): AnkiConnectRequest {
     return AnkiConnect.changeDeck(this.card_ids, this.target_deck)
   }
 
-  getClearTags(): AnkiConnect.AnkiConnectRequest {
+  getClearTags(): AnkiConnectRequest {
     const IDs: number[] = []
     for (const parsed of this.notes_to_edit) {
       IDs.push(parsed.identifier)
@@ -240,8 +241,8 @@ abstract class AbstractFile {
     return AnkiConnect.removeTags(IDs, this.tags.join(' '))
   }
 
-  getAddTags(): AnkiConnect.AnkiConnectRequest {
-    const actions: AnkiConnect.AnkiConnectRequest[] = []
+  getAddTags(): AnkiConnectRequest {
+    const actions: AnkiConnectRequest[] = []
     for (const parsed of this.notes_to_edit) {
       actions.push(
         AnkiConnect.addTags(
