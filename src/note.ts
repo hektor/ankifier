@@ -1,36 +1,39 @@
-/*Manages parsing notes into a dictionary formatted for AnkiConnect.
-
-Input must be the note text.
-Does NOT deal with finding the note in the file.*/
-
 import { FormatConverter } from './format'
 import { AnkiConnectNote, AnkiConnectNoteAndID } from './interfaces/note-interface'
 import { FIELDS_DICT, FROZEN_FIELDS_DICT } from './interfaces/field-interface'
 import { FileData } from './interfaces/settings-interface'
 import { OBS_TAG_REGEXP, ANKI_CLOZE_REGEXP } from './constants'
 
+/*
+ * Manages parsing notes into a dictionary formatted for AnkiConnect.
+ *
+ * Input must be the note text.
+ * Does NOT deal with finding the note in the file.
+ */
+
 const TAG_PREFIX = 'Tags: '
 export const TAG_SEP = ' '
 export const ID_REGEXP_STR: string = String.raw`\n?(?:<!--)?(?:ID: (\d+).*)`
 export const TAG_REGEXP_STR: string = String.raw`(Tags: .*)`
-
 export const CLOZE_ERROR = 42
 export const NOTE_TYPE_ERROR = 69
 
-// Check whether text actually contains cloze deletions
-function has_clozes(text: string): boolean {
-  return ANKI_CLOZE_REGEXP.test(text)
-}
+/*
+ * Match cloze syntax in a given string
+ *
+ * e.g. The string `This a  a{{c1::cloze}}.` would return `true`
+ * e.g. The string `This not.` would return `false`
+ */
 
-function note_has_clozes(note: AnkiConnectNote): boolean {
-  /*Checks whether a note has cloze deletions in any of its fields.*/
-  for (const i in note.fields) {
-    if (has_clozes(note.fields[i])) {
-      return true
-    }
-  }
-  return false
-}
+const matchCloze = (s: string): boolean => ANKI_CLOZE_REGEXP.test(s)
+
+/*
+ * Checks whether any field of a note contains at least one cloze, return true
+ * as soon a cloze is detected
+ */
+
+const containsCloze = (note: AnkiConnectNote): boolean =>
+  Object.values(note.fields).some(matchCloze)
 
 abstract class AbstractNote {
   text: string
@@ -314,9 +317,6 @@ export class RegexNote {
     if (context) {
       const context_field = data.context_fields[this.note_type]
       template['fields'][context_field] += context
-    }
-    if (this.note_type.includes('Cloze') && !note_has_clozes(template)) {
-      this.identifier = CLOZE_ERROR //An error code that says "don't add this note!"
     }
     template['tags'].push(...this.tags)
     template['deckName'] = deck
