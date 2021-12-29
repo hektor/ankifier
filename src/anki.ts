@@ -1,4 +1,4 @@
-import { AnkiConnectNote as Note } from './interfaces/note-interface'
+import { AnkiConnectNote } from './interfaces/note-interface'
 
 export interface Request {
   action: string
@@ -64,7 +64,7 @@ const request = (action: string, params = {}): Request => ({
  */
 
 type Multi = (actions: Request[]) => Request
-type Note = (note: Note) => Request
+type Note = (note: AnkiConnectNote) => Request
 type Notes = (notes: number[]) => Request
 type Fields = (id: number, fields: Record<string, string>) => Request
 type ChangeDeck = (cards: number[], deck: string) => Request
