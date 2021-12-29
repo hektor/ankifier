@@ -38,6 +38,9 @@ const converter: Converter = new Converter({
   extensions: [showdownHighlight],
 })
 
+const obsidianToAnkiMath = (s: string): string =>
+  s.replace(OBS_DISPLAY_MATH_REGEXP, '\\[$1\\]').replace(OBS_INLINE_MATH_REGEXP, '\\($1\\)')
+
 export class FormatConverter {
   file_cache: CachedMetadata
   vault_name: string
@@ -69,12 +72,6 @@ export class FormatConverter {
     for (const field in note.fields) {
       note.fields[field] += frozen_fields_dict[note.modelName][field]
     }
-  }
-
-  obsidian_to_anki_math(note_text: string): string {
-    return note_text
-      .replace(OBS_DISPLAY_MATH_REGEXP, '\\[$1\\]')
-      .replace(OBS_INLINE_MATH_REGEXP, '\\($1\\)')
   }
 
   cloze_repl(_1: string, match_id: string, match_content: string): string {
@@ -149,7 +146,7 @@ export class FormatConverter {
   }
 
   format(note_text: string, cloze: boolean, highlights_to_cloze: boolean): string {
-    note_text = this.obsidian_to_anki_math(note_text)
+    note_text = obsidianToAnkiMath(note_text)
     //Extract the parts that are anki math
     let math_matches: string[]
     let inline_code_matches: string[]
