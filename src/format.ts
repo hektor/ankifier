@@ -3,7 +3,7 @@ import { basename, extname } from 'path'
 import { Converter } from 'showdown'
 import { CachedMetadata } from 'obsidian'
 import { OBS_DISPLAY_CODE_REGEXP, OBS_CODE_REGEXP, CODE_CSS_URL } from './constants'
-import { latexToDollarMath } from './lib/markdown'
+import { dollarToLatexMath } from './lib/markdown'
 import { escapeRegex } from './lib/regex'
 import { escapeHtml, PARA_OPEN, PARA_CLOSE } from './lib/html'
 
@@ -138,7 +138,7 @@ export class FormatConverter {
   }
 
   format(note_text: string, cloze: boolean, highlights_to_cloze: boolean): string {
-    note_text = latexToDollarMath(note_text)
+    note_text = dollarToLatexMath(note_text)
     //Extract the parts that are anki math
     let math_matches: string[]
     let inline_code_matches: string[]
