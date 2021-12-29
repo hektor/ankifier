@@ -289,8 +289,8 @@ export class AllFile extends AbstractFile {
     }
     this.ignore_spans.push(...spans(this.data.NOTE_REGEXP, this.file))
     this.ignore_spans.push(...spans(this.data.INLINE_REGEXP, this.file))
-    this.ignore_spans.push(...spans(c.OBS_INLINE_MATH_REGEXP, this.file))
-    this.ignore_spans.push(...spans(c.OBS_DISPLAY_MATH_REGEXP, this.file))
+    this.ignore_spans.push(...spans(c.INLINE_DOLLAR_MATH_REGEXP, this.file))
+    this.ignore_spans.push(...spans(c.DISPLAY_DOLLAR_MATH_REGEXP, this.file))
     this.ignore_spans.push(...spans(c.OBS_CODE_REGEXP, this.file))
     this.ignore_spans.push(...spans(c.OBS_DISPLAY_CODE_REGEXP, this.file))
   }
