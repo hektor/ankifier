@@ -10,6 +10,7 @@ import {
   CODE_CSS_URL,
   escapeRegex,
 } from './constants'
+import { escapeHtml, PARA_OPEN, PARA_CLOSE } from './lib/html'
 
 import showdownHighlight from 'showdown-highlight'
 
@@ -25,9 +26,6 @@ const CLOZE_REGEXP = /(?:(?<!{){(?:c?(\d+)[:|])?(?!{))((?:[^\n][\n]?)+?)(?:(?<!}
 const IMAGE_EXTS: string[] = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.svg', '.tiff']
 const AUDIO_EXTS: string[] = ['.wav', '.m4a', '.flac', '.mp3', '.wma', '.aac', '.webm']
 
-const PARA_OPEN = '<p>'
-const PARA_CLOSE = '</p>'
-
 let cloze_unset_num = 1
 
 const converter: Converter = new Converter({
@@ -39,15 +37,6 @@ const converter: Converter = new Converter({
   requireSpaceBeforeHeadingText: true,
   extensions: [showdownHighlight],
 })
-
-function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-}
 
 export class FormatConverter {
   file_cache: CachedMetadata
