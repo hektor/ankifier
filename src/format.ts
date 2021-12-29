@@ -8,8 +8,8 @@ import {
   OBS_DISPLAY_CODE_REGEXP,
   OBS_CODE_REGEXP,
   CODE_CSS_URL,
-  escapeRegex,
 } from './constants'
+import { escapeRegex } from './lib/regex'
 import { escapeHtml, PARA_OPEN, PARA_CLOSE } from './lib/html'
 
 import showdownHighlight from 'showdown-highlight'

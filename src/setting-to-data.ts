@@ -2,7 +2,7 @@ import { PluginSettings, ParsedSettings } from './interfaces/settings-interface'
 import { App } from 'obsidian'
 import * as AnkiConnect from './anki'
 import { ID_REGEXP_STR } from './note'
-import { escapeRegex } from './constants'
+import { escapeRegex } from './lib/regex'
 
 export async function settingToData(
   app: App,
