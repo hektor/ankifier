@@ -17,13 +17,8 @@ import { Md5 } from 'ts-md5/dist/md5'
 import * as AnkiConnect from './anki'
 import * as c from './constants'
 import { FormatConverter } from './format'
+import { toInlineHTMLComment } from './lib/html'
 import { CachedMetadata, HeadingCache } from 'obsidian'
-
-/*
- * Wrap a given string in an inline HTML comment
- */
-
-const toInlineHTMLComment = (s: string): string => `<!--${s}-->`
 
 /*
  * Return ID string for a given the note ID.  Wrapped in a
