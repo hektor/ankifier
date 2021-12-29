@@ -5,8 +5,7 @@ import { AnkiConnectNote } from './interfaces/note-interface'
 export interface AnkiConnectRequest {
   action: string
   version: 6
-  // eslint-disable-next-line
-  params: any
+  params: object
 }
 
 export function invoke(action: string, params = {}) {
