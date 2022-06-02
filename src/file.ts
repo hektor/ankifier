@@ -11,7 +11,6 @@ import {
   ID_REGEXP_STR,
   TAG_REGEXP_STR,
 } from './note'
-import { Md5 } from 'ts-md5/dist/md5'
 import * as AnkiConnect from './anki'
 import { Request as AnkiConnectRequest } from './anki'
 import * as c from './constants'
@@ -78,10 +77,6 @@ function* findignore(
     }
   }
 }
-
-// Generate hash from file contents, return hash string
-// FIXME: extract `getHash`
-export const getHash = (contents: string): string => Md5.hashStr(contents) as string
 
 abstract class AbstractFile {
   file: string

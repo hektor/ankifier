@@ -9,7 +9,8 @@ import {
   FileSystemAdapter,
   Notice,
 } from 'obsidian'
-import { AllFile, getHash } from './file'
+import { AllFile } from './file'
+import { getHash } from './lib/hash'
 import * as AnkiConnect from './anki'
 import { basename } from 'path'
 
