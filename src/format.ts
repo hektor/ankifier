@@ -55,7 +55,7 @@ export class FormatConverter {
   }
 
   format_note_with_url(note: AnkiConnectNote, url: string, field: string): void {
-    note.fields[field] += '<br><a href="' + url + '" class="obsidian-link">Obsidian</a>'
+    note.fields[field] += `<br><a href="${url}" class="ankifier">View</a>`
   }
 
   format_note_with_frozen_fields(
@@ -69,12 +69,10 @@ export class FormatConverter {
 
   cloze_repl(_1: string, match_id: string, match_content: string): string {
     if (match_id == undefined) {
-      const result = '{{c' + cloze_unset_num.toString() + '::' + match_content + '}}'
       cloze_unset_num += 1
-      return result
+      return `{{c${cloze_unset_num.toString()}::${match_content}}}`
     }
-    const result = '{{c' + match_id + '::' + match_content + '}}'
-    return result
+    return `{{c${match_id}::${match_content}}}`
   }
 
   curly_to_cloze(text: string): string {
@@ -94,12 +92,14 @@ export class FormatConverter {
         if (AUDIO_EXTS.includes(extname(embed.link))) {
           text = text.replace(
             new RegExp(escapeRegex(embed.original), 'g'),
-            '[sound:' + basename(embed.link) + ']'
+            `[sound:${basename(embed.link)}]`
           )
         } else if (IMAGE_EXTS.includes(extname(embed.link))) {
           text = text.replace(
             new RegExp(escapeRegex(embed.original), 'g'),
-            '<img src="' + basename(embed.link) + '" alt="' + embed.displayText + '">'
+            embed.displayText
+              ? `<img src="${basename(embed.link)}" alt="${embed.displayText}">`
+              : `<img src="${basename(embed.link)}">`
           )
         } else {
           console.warn('Unsupported extension: ', extname(embed.link))
@@ -116,7 +116,7 @@ export class FormatConverter {
     for (const link of this.file_cache.links) {
       text = text.replace(
         new RegExp(escapeRegex(link.original), 'g'),
-        '<a href="' + this.getUrlFromLink(link.link) + '">' + link.displayText + '</a>'
+        `<a href="${this.getUrlFromLink(link.link)}">${link.displayText}</a>`
       )
     }
     return text
