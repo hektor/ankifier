@@ -32,9 +32,10 @@ export async function settingToData(
     tags: [Defaults.Tag],
   }
 
-  // Get all note IDs from Anki
+  // Get all note IDs of generated cards from Anki
+  // Query cards tagged with tag from settings
   result.EXISTING_IDS = (await AnkiConnect.invoke('findNotes', {
-    query: '',
+    query: `tag:${Defaults.Tag}`,
   })) as number[]
 
   //RegExp section
