@@ -1,5 +1,5 @@
 import { FROZEN_FIELDS_DICT } from './interfaces/field-interface'
-import { AnkiConnectNote } from './interfaces/note-interface'
+import { AnkiConnectNote, AnkiConnectNoteAndID } from './interfaces/note-interface'
 import { FileData } from './interfaces/settings-interface'
 import {
   Note,
