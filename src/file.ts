@@ -1,5 +1,5 @@
 import { FROZEN_FIELDS_DICT } from './interfaces/field-interface'
-import { AnkiConnectNote, AnkiConnectNoteAndID } from './interfaces/note-interface'
+import { AnkiConnectNote } from './interfaces/note-interface'
 import { FileData } from './interfaces/settings-interface'
 import {
   Note,
@@ -212,8 +212,11 @@ abstract class AbstractFile {
 
   getUpdateFields(): AnkiConnectRequest {
     const actions: AnkiConnectRequest[] = []
-    for (const parsed of this.notes_to_edit) {
-      actions.push(AnkiConnect.updateNoteFields(parsed.identifier, parsed.note.fields))
+    for (const {
+      identifier: id,
+      note: { fields },
+    } of this.notes_to_edit) {
+      actions.push(AnkiConnect.updateNoteFields({ id, fields }))
     }
     return AnkiConnect.multi(actions)
   }

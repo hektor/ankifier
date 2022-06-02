@@ -65,8 +65,8 @@ const request = (action: string, params = {}): Request => ({
 
 type Multi = (actions: Request[]) => Request
 type Note = (note: AnkiConnectNote) => Request
+type NoteFields = (note: { id: number; fields: Record<string, string> }) => Request
 type Notes = (notes: number[]) => Request
-type Fields = (id: number, fields: Record<string, string>) => Request
 type ChangeDeck = (cards: number[], deck: string) => Request
 type Tags = (notes: number[], tags: string) => Request
 type File = (filename: string, data: string) => Request
@@ -75,14 +75,11 @@ type FilePath = (filename: string, path: string) => Request
 export const multi: Multi = (actions) => request('multi', { actions })
 export const addNote: Note = (note) => request('addNote', { note })
 export const deleteNotes: Notes = (notes) => request('deleteNotes', { notes })
-export const updateNoteFields: Fields = (id, fields) =>
-  request('updateNoteFields', { note: { id, fields } })
+export const updateNoteFields: NoteFields = (note) => request('updateNoteFields', { note })
 export const notesInfo: Notes = (notes) => request('notesInfo', { notes })
 export const changeDeck: ChangeDeck = (cards, deck) => request('changeDeck', { cards, deck })
 export const removeTags: Tags = (notes, tags) => request('removeTags', { notes, tags })
 export const addTags: Tags = (notes, tags) => request('addTags', { notes, tags })
 export const getTags = (): Request => request('getTags')
-export const storeMediaFile: File = (filename, data) =>
-  request('storeMediaFile', { filename, data })
-export const storeMediaFileByPath: FilePath = (filename, path) =>
-  request('storeMediaFile', { filename, path })
+export const storeMediaFile: File = (fn, data) => request('storeMediaFile', { fn, data })
+export const storeMediaFileByPath: FilePath = (fn, path) => request('storeMediaFile', { fn, path })
