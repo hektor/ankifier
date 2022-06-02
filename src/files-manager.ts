@@ -190,8 +190,8 @@ export class FileManager {
   }
 
   async requests_1() {
-    const requests: AnkiConnect.AnkiConnectRequest[] = []
-    let temp: AnkiConnect.AnkiConnectRequest[] = []
+    const requests: AnkiConnect.Request[] = []
+    let temp: AnkiConnect.Request[] = []
     console.info('Requesting addition of notes into Anki...')
     for (const file of this.ownFiles) {
       temp.push(file.getAddNotes())
@@ -321,8 +321,8 @@ export class FileManager {
   }
 
   async requests_2(): Promise<void> {
-    const requests: AnkiConnect.AnkiConnectRequest[] = []
-    let temp: AnkiConnect.AnkiConnectRequest[] = []
+    const requests: AnkiConnect.Request[] = []
+    let temp: AnkiConnect.Request[] = []
     console.info('Requesting cards to be moved to target deck...')
     for (const file of this.ownFiles) {
       temp.push(file.getChangeDecks())
