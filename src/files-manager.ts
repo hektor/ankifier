@@ -9,7 +9,7 @@ import {
   FileSystemAdapter,
   Notice,
 } from 'obsidian'
-import { AllFile } from './file'
+import { AllFile, getHash } from './file'
 import * as AnkiConnect from './anki'
 import { basename } from 'path'
 
@@ -175,7 +175,8 @@ export class FileManager {
       if (
         !(
           this.file_hashes.hasOwnProperty(file.path) &&
-          file.getHash() === this.file_hashes[file.path]
+          // `file.file` contains the actual file contents
+          getHash(file.file) === this.file_hashes[file.path]
         )
       ) {
         //Indicates it's changed or new
@@ -312,10 +313,12 @@ export class FileManager {
     await this.requests_2()
   }
 
+  // This only gets called when a file is changed
   getHashes(): Record<string, string> {
     const result: Record<string, string> = {}
     for (const file of this.ownFiles) {
-      result[file.path] = file.getHash()
+      // `file.file` contains the actual file contents
+      result[file.path] = getHash(file.file)
     }
     return result
   }

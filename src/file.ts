@@ -79,6 +79,10 @@ function* findignore(
   }
 }
 
+// Generate hash from file contents, return hash string
+// FIXME: extract `getHash`
+export const getHash = (contents: string): string => Md5.hashStr(contents) as string
+
 abstract class AbstractFile {
   file: string
   path: string
@@ -152,10 +156,6 @@ abstract class AbstractFile {
   setup_global_tags() {
     const result = this.file.match(this.data.TAG_REGEXP)
     this.global_tags = result ? result[1] : ''
-  }
-
-  getHash(): string {
-    return Md5.hashStr(this.file) as string
   }
 
   abstract scanFile(): void
