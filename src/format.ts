@@ -12,9 +12,10 @@ import showdownHighlight from 'showdown-highlight'
 const ANKI_MATH_REGEXP = /(\\\[[\s\S]*?\\\])|(\\\([\s\S]*?\\\))/g
 const HIGHLIGHT_REGEXP = /==(.*?)==/g
 
-const MATH_REPLACE = 'OBSTOANKIMATH'
-const INLINE_CODE_REPLACE = 'OBSTOANKICODEINLINE'
-const DISPLAY_CODE_REPLACE = 'OBSTOANKICODEDISPLAY'
+// Used to (temporarily) replace corresponding regexp match by specified mask
+const MATH_MASK = 'MATH_MASK'
+const INLINE_CODE_MASK = 'INLINE_CODE_MASK'
+const DISPLAY_CODE_MASK = 'DISPLAY_CODE_MASK'
 
 const CLOZE_REGEXP = /(?:(?<!{){(?:c?(\d+)[:|])?(?!{))((?:[^\n][\n]?)+?)(?:(?<!})}(?!}))/g
 
@@ -83,20 +84,20 @@ export class FormatConverter {
     return text
   }
 
-  getAndFormatMedias(note_text: string): string {
+  getAndFormatMedias(text: string): string {
     if (!this.file_cache.hasOwnProperty('embeds')) {
-      return note_text
+      return text
     }
     for (const embed of this.file_cache.embeds) {
-      if (note_text.includes(embed.original)) {
+      if (text.includes(embed.original)) {
         this.detectedMedia.add(embed.link)
         if (AUDIO_EXTS.includes(extname(embed.link))) {
-          note_text = note_text.replace(
+          text = text.replace(
             new RegExp(escapeRegex(embed.original), 'g'),
             '[sound:' + basename(embed.link) + ']'
           )
         } else if (IMAGE_EXTS.includes(extname(embed.link))) {
-          note_text = note_text.replace(
+          text = text.replace(
             new RegExp(escapeRegex(embed.original), 'g'),
             '<img src="' + basename(embed.link) + '" alt="' + embed.displayText + '">'
           )
@@ -105,73 +106,83 @@ export class FormatConverter {
         }
       }
     }
-    return note_text
+    return text
   }
 
-  formatLinks(note_text: string): string {
+  formatLinks(text: string): string {
     if (!this.file_cache.hasOwnProperty('links')) {
-      return note_text
+      return text
     }
     for (const link of this.file_cache.links) {
-      note_text = note_text.replace(
+      text = text.replace(
         new RegExp(escapeRegex(link.original), 'g'),
         '<a href="' + this.getUrlFromLink(link.link) + '">' + link.displayText + '</a>'
       )
     }
-    return note_text
+    return text
   }
 
-  censor(note_text: string, regexp: RegExp, mask: string): [string, string[]] {
-    /*Take note_text and replace every match of regexp with mask, simultaneously adding it to a string array*/
-    const matches: string[] = []
-    for (const match of note_text.matchAll(regexp)) {
-      matches.push(match[0])
-    }
-    return [note_text.replace(regexp, mask), matches]
+  // Replace every match of regexp in `text` with mask
+  // Save matches to array
+  censor(text: string, regexp: RegExp, mask: string): [string, string[]] {
+    const textOfMatches = [...text.matchAll(regexp)].map((arr) => arr[0])
+    return [text.replace(regexp, mask), textOfMatches]
   }
 
-  decensor(note_text: string, mask: string, replacements: string[], escape: boolean): string {
+  // Replace occurences of `mask` in `text` with corresponding replacement
+  decensor(text: string, mask: string, replacements: string[], escape: boolean): string {
     for (const replacement of replacements) {
-      note_text = note_text.replace(mask, escape ? escapeHtml(replacement) : replacement)
+      text = text.replace(mask, escape ? escapeHtml(replacement) : replacement)
     }
-    return note_text
+    return text
   }
 
-  format(note_text: string, cloze: boolean, highlights_to_cloze: boolean): string {
-    note_text = dollarToLatexMath(note_text)
-    //Extract the parts that are anki math
+  // TODO: Convert this to remarked+rehype and use abstract syntax tree to
+  // instead of regexp.
+
+  format(text: string, cloze: boolean, highlights_to_cloze: boolean): string {
+    // Dollar math syntax to Anki's LaTeX math syntax
+    text = dollarToLatexMath(text)
+
+    // Initialize arrays for saving text that gets masked
     let math_matches: string[]
     let inline_code_matches: string[]
     let display_code_matches: string[]
-    const add_highlight_css: boolean = note_text.match(OBS_DISPLAY_CODE_REGEXP) ? true : false
-    ;[note_text, math_matches] = this.censor(note_text, ANKI_MATH_REGEXP, MATH_REPLACE)
-    ;[note_text, display_code_matches] = this.censor(
-      note_text,
-      OBS_DISPLAY_CODE_REGEXP,
-      DISPLAY_CODE_REPLACE
-    )
-    ;[note_text, inline_code_matches] = this.censor(note_text, OBS_CODE_REGEXP, INLINE_CODE_REPLACE)
+
+    // Flag if syntax highlighting is necessary
+    const add_highlight_css: boolean = text.match(OBS_DISPLAY_CODE_REGEXP) ? true : false
+
+    // Replace text with masked text and save matches to corresponding arrays
+    ;[text, math_matches] = this.censor(text, ANKI_MATH_REGEXP, MATH_MASK)
+    ;[text, display_code_matches] = this.censor(text, OBS_DISPLAY_CODE_REGEXP, DISPLAY_CODE_MASK)
+    ;[text, inline_code_matches] = this.censor(text, OBS_CODE_REGEXP, INLINE_CODE_MASK)
+
     if (cloze) {
       if (highlights_to_cloze) {
-        note_text = note_text.replace(HIGHLIGHT_REGEXP, '{$1}')
+        text = text.replace(HIGHLIGHT_REGEXP, '{$1}')
       }
-      note_text = this.curly_to_cloze(note_text)
+      text = this.curly_to_cloze(text)
     }
-    note_text = this.getAndFormatMedias(note_text)
-    note_text = this.formatLinks(note_text)
+
+    text = this.getAndFormatMedias(text)
+    text = this.formatLinks(text)
     //Special for formatting highlights now, but want to avoid any == in code
-    note_text = note_text.replace(HIGHLIGHT_REGEXP, String.raw`<mark>$1</mark>`)
-    note_text = this.decensor(note_text, DISPLAY_CODE_REPLACE, display_code_matches, false)
-    note_text = this.decensor(note_text, INLINE_CODE_REPLACE, inline_code_matches, false)
-    note_text = converter.makeHtml(note_text)
-    note_text = this.decensor(note_text, MATH_REPLACE, math_matches, true).trim()
+    text = text.replace(HIGHLIGHT_REGEXP, String.raw`<mark>$1</mark>`)
+    text = this.decensor(text, DISPLAY_CODE_MASK, display_code_matches, false)
+    text = this.decensor(text, INLINE_CODE_MASK, inline_code_matches, false)
+    console.log(`text:`)
+    console.log(text)
+    text = converter.makeHtml(text)
+    text = this.decensor(text, MATH_MASK, math_matches, true).trim()
+
     // Remove unnecessary paragraph tag
-    if (note_text.startsWith(PARA_OPEN) && note_text.endsWith(PARA_CLOSE)) {
-      note_text = note_text.slice(PARA_OPEN.length, -1 * PARA_CLOSE.length)
+    if (text.startsWith(PARA_OPEN) && text.endsWith(PARA_CLOSE)) {
+      text = text.slice(PARA_OPEN.length, -1 * PARA_CLOSE.length)
     }
-    if (add_highlight_css) {
-      note_text = '<link href="' + CODE_CSS_URL + '" rel="stylesheet">' + note_text
-    }
-    return note_text
+
+    // Prepend text with highlight stylesheet if note requires syntax highlighting
+    if (add_highlight_css) text = `<link href="${CODE_CSS_URL}" rel="stylesheet">${text}`
+
+    return text
   }
 }

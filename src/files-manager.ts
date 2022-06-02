@@ -90,6 +90,14 @@ export class FileManager {
   }
 
   getUrl(file: TFile): string {
+    // Return link to file in Obsidian vault
+    // E.g. `obsidian://open?vault=.wiki&file=wumpus.md`
+    //
+    // `encodeURIComponent` encodes string to URL string
+    //
+    // FIXME: update this to a preview that does not require Obsidian
+    // E.g. to make this return a URL that serves the specified file HTML.
+    // `http://localhost:8080/${encodeURIComponent(file.basename)}.html`
     return (
       'obsidian://open?vault=' +
       encodeURIComponent(this.data.vault_name) +
@@ -158,6 +166,7 @@ export class FileManager {
         new AllFile(
           content,
           file.path,
+          // Add URL if "Add File Link" is `true`
           this.data.add_file_link ? this.getUrl(file) : '',
           file_data,
           cache
