@@ -1,12 +1,12 @@
 import { AnkiConnectNote } from './interfaces/note-interface'
 import { basename, extname } from 'path'
-import { Converter } from 'showdown'
 import { CachedMetadata } from 'obsidian'
 import { OBS_DISPLAY_CODE_REGEXP, OBS_CODE_REGEXP, CODE_CSS_URL } from './constants'
 import { dollarToLatexMath } from './lib/markdown'
 import { escapeRegex } from './lib/regex'
 import { escapeHtml, PARA_OPEN, PARA_CLOSE } from './lib/html'
 
+import { Converter } from 'showdown'
 import showdownHighlight from 'showdown-highlight'
 
 const ANKI_MATH_REGEXP = /(\\\[[\s\S]*?\\\])|(\\\([\s\S]*?\\\))/g
@@ -30,7 +30,7 @@ const converter: Converter = new Converter({
   tasklists: true,
   simpleLineBreaks: true,
   requireSpaceBeforeHeadingText: true,
-  extensions: [showdownHighlight],
+  extensions: [showdownHighlight({ pre: true })],
 })
 
 export class FormatConverter {
