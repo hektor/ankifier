@@ -201,61 +201,57 @@ export class FileManager {
   }
 
   async requests_1() {
-    const requests: AnkiConnect.Request[] = []
-    let temp: AnkiConnect.Request[] = []
-    console.info('Requesting addition of notes into Anki...')
-    for (const file of this.ownFiles) {
-      temp.push(file.getAddNotes())
-    }
-    requests.push(AnkiConnect.multi(temp))
-    temp = []
-    console.info('Requesting card IDs of notes to be edited...')
-    for (const file of this.ownFiles) {
-      temp.push(file.getNoteInfo())
-    }
-    requests.push(AnkiConnect.multi(temp))
-    temp = []
-    console.info('Requesting tag list...')
-    requests.push(AnkiConnect.getTags())
-    console.info('Requesting update of fields of existing notes')
-    for (const file of this.ownFiles) {
-      temp.push(file.getUpdateFields())
-    }
-    requests.push(AnkiConnect.multi(temp))
-    temp = []
-    console.info('Requesting deletion of notes..')
-    for (const file of this.ownFiles) {
-      temp.push(file.getDeleteNotes())
-    }
-    requests.push(AnkiConnect.multi(temp))
-    temp = []
+    const actions: AnkiConnect.Request[] = [
+      // Create request for adding notes
+      AnkiConnect.multi(this.ownFiles.map((file) => file.getAddNotes())),
+      // Create request for notes to be edited
+      AnkiConnect.multi(this.ownFiles.map((file) => file.getNoteInfo())),
+      // Create request for tags
+      AnkiConnect.getTags(),
+      // Create request for updating fields on existing notes
+      AnkiConnect.multi(this.ownFiles.map((file) => file.getUpdateFields())),
+      // Create request for deleting notes
+      AnkiConnect.multi(this.ownFiles.map((file) => file.getDeleteNotes())),
+    ]
+
+    // FIXME: Handle in a less imperative way
     console.info('Requesting addition of media...')
-    for (const file of this.ownFiles) {
-      const mediaLinks = difference(file.formatter.detectedMedia, this.added_media_set)
+    let temp: AnkiConnect.Request[] = []
+    for (const { path, formatter } of this.ownFiles) {
+      const mediaLinks = difference(formatter.detectedMedia, this.added_media_set)
       for (const mediaLink of mediaLinks) {
         console.log('Adding media file: ', mediaLink)
-        const dataFile = this.app.metadataCache.getFirstLinkpathDest(mediaLink, file.path)
+        const dataFile = this.app.metadataCache.getFirstLinkpathDest(mediaLink, path)
         if (!dataFile) {
           console.warn("Couldn't locate media file ", mediaLink)
         } else {
           // Located successfully, so treat as if we've added the media
           this.added_media_set.add(mediaLink)
-          const realPath = (this.app.vault.adapter as FileSystemAdapter).getFullPath(dataFile.path)
-          console.log('AnkiConnect.storeMediaFileByPath', basename(mediaLink), realPath)
+
+          const filename = basename(mediaLink)
+          const path = (this.app.vault.adapter as FileSystemAdapter).getFullPath(dataFile.path)
           // E.g.
-          // image.png
-          // /home/wiki/img/image.png
-          temp.push(
-            AnkiConnect.storeMediaFileByPath({ filename: basename(mediaLink), path: realPath })
-          )
+          // {
+          //   filename: "image.png",
+          //   path: "/home/wiki/img/image.png"
+          // }
+          temp.push(AnkiConnect.storeMediaFileByPath({ filename, path }))
         }
       }
     }
-    requests.push(AnkiConnect.multi(temp))
+
+    actions.push(AnkiConnect.multi(temp))
     temp = []
-    this.requests_1_result = await AnkiConnect.invoke('multi', {
-      actions: requests,
-    })
+
+    // `` is a (possibly huge) object
+    // (possibly consisting of lots of nested actions)
+    //
+    // Note: this is the only place where AnkiConnect is used to actually
+    //       *write* data to Anki.
+    //
+    // FIXME: `request` can contain `multi` actions with an empty array of actions
+    //        These should probably be either skipped or filtered out at the end
+    this.requests_1_result = await AnkiConnect.invoke('multi', { actions })
     await this.parse_requests_1()
   }
 
