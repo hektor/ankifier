@@ -69,8 +69,7 @@ type NoteFields = (note: { id: number; fields: Record<string, string> }) => Requ
 type Notes = (notes: number[]) => Request
 type ChangeDeck = (cards: number[], deck: string) => Request
 type Tags = (notes: number[], tags: string) => Request
-type File = (filename: string, data: string) => Request
-type FilePath = (filename: string, path: string) => Request
+type FileFrom = ({ filename, path }: Record<string, string>) => Request
 
 export const multi: Multi = (actions) => request('multi', { actions })
 export const addNote: Note = (note) => request('addNote', { note })
@@ -81,5 +80,4 @@ export const changeDeck: ChangeDeck = (cards, deck) => request('changeDeck', { c
 export const removeTags: Tags = (notes, tags) => request('removeTags', { notes, tags })
 export const addTags: Tags = (notes, tags) => request('addTags', { notes, tags })
 export const getTags = (): Request => request('getTags')
-export const storeMediaFile: File = (fn, data) => request('storeMediaFile', { fn, data })
-export const storeMediaFileByPath: FilePath = (fn, path) => request('storeMediaFile', { fn, path })
+export const storeMediaFileByPath: FileFrom = (fileFrom) => request('storeMediaFile', fileFrom)

@@ -241,7 +241,13 @@ export class FileManager {
           // Located successfully, so treat as if we've added the media
           this.added_media_set.add(mediaLink)
           const realPath = (this.app.vault.adapter as FileSystemAdapter).getFullPath(dataFile.path)
-          temp.push(AnkiConnect.storeMediaFileByPath(basename(mediaLink), realPath))
+          console.log('AnkiConnect.storeMediaFileByPath', basename(mediaLink), realPath)
+          // E.g.
+          // image.png
+          // /home/wiki/img/image.png
+          temp.push(
+            AnkiConnect.storeMediaFileByPath({ filename: basename(mediaLink), path: realPath })
+          )
         }
       }
     }
